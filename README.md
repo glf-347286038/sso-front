@@ -1,4 +1,4 @@
-# y
+# sso-vue
 
 > A Vue.js project
 
