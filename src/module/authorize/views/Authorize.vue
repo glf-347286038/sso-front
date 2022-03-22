@@ -36,7 +36,7 @@
           name="password"
           tabindex="2"
           auto-complete="on"
-          @keyup.enter.native="handleLogin"
+          @keyup.enter.native="handleSsoAuthorize"
         />
         <span class="show-pwd" @click="showPwd">
           <em class="el-icon-view"></em>
@@ -44,7 +44,7 @@
       </el-form-item>
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;"
-                 @click.native.prevent="handleLogin">Login
+                 @click.native.prevent="handleSsoAuthorize">Login
       </el-button>
     </el-form>
   </div>
@@ -54,23 +54,25 @@
 
   import PointWave from '../views/PointWave'
   import backgroundImg from '../image/background.png'
+  import Http from "../../../util/request";
+  import {getQueryVariable} from "../../../util/usefulUtil";
 
   export default {
-    name: 'Login',
+    name: 'Authorize',
     components: {
       PointWave
     },
     data() {
       const validateUsername = (rule, value, callback) => {
-        if (value.length < 4) {
-          callback(new Error('The userName can not be less than 4 digits'))
+        if (value.length < 3) {
+          callback(new Error('The userName can not be less than 3 digits'))
         } else {
           callback()
         }
       }
       const validatePassword = (rule, value, callback) => {
-        if (value.length < 6) {
-          callback(new Error('The password can not be less than 6 digits'))
+        if (value.length < 3) {
+          callback(new Error('The password can not be less than 3 digits'))
         } else {
           callback()
         }
@@ -118,18 +120,37 @@
           this.$refs.password.focus()
         })
       },
-      handleLogin() {
+      /**
+       * 第三方授权按钮
+       */
+      handleSsoAuthorize() {
         console.log("开始登录")
+        let continued = false;
         this.$refs.loginForm.validate(valid => {
-          if (valid) {
-            this.loading = true
-            // 调用后端接口
-          } else {
-            console.log('error submit!!')
-            return false
-          }
-        })
-      }
+          continued = valid;
+        });
+        if (!continued) {
+          return;
+        }
+        this.loading = true
+        // url上的appId
+        const params = {
+          userName: this.loginForm.username,
+          password: this.loginForm.password,
+          appId: getQueryVariable("appId")
+        }
+        let callbackUri = Http.post(`${this.$baseUrl}/oauth/authorize`, params)
+          .catch(() => {
+            this.loading = false;
+          })
+        this.loading = false;
+        console.log(callbackUri);
+      },
+    },
+
+    // 生命周期函数
+    created: function () {
+      console.log("进入生命周期函数")
     }
   }
 </script>

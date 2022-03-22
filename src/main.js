@@ -8,7 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false
-
+Vue.prototype.$baseUrl = process.env.baseUrl
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
