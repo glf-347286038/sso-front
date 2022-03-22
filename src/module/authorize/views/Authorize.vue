@@ -57,6 +57,7 @@
   import Http from "../../../util/request";
   import {getQueryVariable} from "../../../util/usefulUtil";
 
+
   export default {
     name: 'Authorize',
     components: {
@@ -123,7 +124,7 @@
       /**
        * 第三方授权按钮
        */
-      handleSsoAuthorize() {
+      async handleSsoAuthorize() {
         console.log("开始登录")
         let continued = false;
         this.$refs.loginForm.validate(valid => {
@@ -139,12 +140,14 @@
           password: this.loginForm.password,
           appId: getQueryVariable("appId")
         }
-        let callbackUri = Http.post(`${this.$baseUrl}/oauth/authorize`, params)
+        const callbackUri = await Http.post(`${this.$baseUrl}/oauth/authorize`, params)
           .catch(() => {
             this.loading = false;
-          })
+          });
         this.loading = false;
-        console.log(callbackUri);
+        console.log("后端返回的回调地址:", callbackUri)
+        // window.location.href = 'http://127.0.0.1:5000/callback?code=123ed'
+        window.location.href = callbackUri
       },
     },
 
