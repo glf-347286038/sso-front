@@ -141,10 +141,9 @@
           appId: getQueryVariable("appId")
         }
         const callbackUri = await Http.post(`${this.$baseUrl}/oauth/authorize`, params)
-          .catch(() => {
+          .finally(() => {
             this.loading = false;
           });
-        this.loading = false;
         console.log("后端返回的回调地址:", callbackUri)
         // window.location.href = 'http://127.0.0.1:5000/callback?code=123ed'
         window.location.href = callbackUri
