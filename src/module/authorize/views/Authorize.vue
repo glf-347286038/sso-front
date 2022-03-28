@@ -136,7 +136,7 @@
         this.loading = true
         // url上的appId
         const params = {
-          userName: this.loginForm.username,
+          userNameOrEmail: this.loginForm.username,
           password: this.loginForm.password,
           appId: getQueryVariable("appId")
         }
